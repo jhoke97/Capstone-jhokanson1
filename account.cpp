@@ -30,12 +30,3 @@ void account::displayAccounts()
 {
 
 }
-void createAccount()
-{
-  cout << "CREATE NEW ACCOUNT\n";
-  cout << "Enter new username: ";
-  cin >> username;
-  cout << endl << "Enter password: ";
-  cin >>password;
-  cout << endl << "Confirm password: "
-}
