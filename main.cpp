@@ -2,6 +2,7 @@
 
 using namespace std;
 
+void createAccount();
 int main()
 {
   /*
@@ -15,4 +16,14 @@ int main()
   */
   
 
+}
+
+void createAccount()
+{
+  cout << "CREATE NEW ACCOUNT\n";
+  cout << "Enter new username: ";
+  cin >> username;
+  cout << endl << "Enter password: ";
+  cin >>password;
+  cout << endl << "Confirm password: "
 }
