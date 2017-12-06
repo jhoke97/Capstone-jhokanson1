@@ -1,10 +1,13 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include "account.h"
 
 using namespace std;
 
-void createAccount();
+void createAccount(char*, string);
+void openAccount(char*, string);
+bool passwordCheck(char*, string);
 int main()
 {
   /*
@@ -17,7 +20,8 @@ int main()
      close session
      */
   account activeAccount;
-  string option, username, password, password2; 
+  string option, password, password2; 
+  char username[100];
   bool validOption = true;
   cout << "Welcome to the bank of CSCI111.\n";
   do{
@@ -33,13 +37,13 @@ int main()
       cout << "CREATE NEW ACCOUNT\n";
       cout << "Enter new username: ";
       cin >> username;
-      cout << endl << "Enter password: ";
-      cin >>password;
-      cout << endl << "Confirm password: "
-        cin >> password2;
-      if(password == password2)
+//      cin.getline(username, 100); 
+      cout << endl << "Enter your password: ";
+      cin >> password;
+      cout << endl << "Confirm password: ";
+      cin >> password2;
+      if(password == password2)  
       {
-        cout << "Creating Account...\n";
         createAccount(username, password);
       }else
       {
@@ -51,13 +55,19 @@ int main()
           cout << endl << "Confirm password: ";
           cin >> password2;
         }
-        cout << "Creating Account...\n" 
         createAccount(username, password); 
         validOption = true;
       }
     }else if(option == "O" || option == "o")
     {
-      //      openAccount();
+      cout << "Enter Username: ";
+      cin >> username;
+      cout << endl << "Enter password: ";
+      cin >> password;
+      if(passwordCheck(username, password))
+      {
+      openAccount(username, password);
+      }
       validOption = true;
     }else
     {
@@ -66,13 +76,36 @@ int main()
     }
   }
   while(!validOption);
+  return 0;
 }
-
-void createAccount(string username, string password)
+bool passwordCheck(char* username, string password)
 {
+  string passwordToCompare;
+  ifstream file;
+  file.open(username);
+  getline(file, passwordToCompare);
+  if(password == passwordToCompare)
+  {
+    cout << "Welcome " << username << endl;
+    return true;
+  }else{
+    cout << "Password does not match username\n";
+  }
+  }
+void createAccount(char* username, string password)
+{
+  cout << "Creating account..." << endl; 
   ofstream file;
   file.open(username);
-  file << password;
+  file << password << endl;
+  file << 0;
   file.close(); 
 }
-
+void openAccount(char* username, string password)
+{
+  string passwordToCompare;
+  ifstream read; 
+  read.open(username);
+  getline(read, passwordToCompare); 
+  
+}
