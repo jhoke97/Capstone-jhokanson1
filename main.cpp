@@ -1,43 +1,38 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <stdlib.h>
 #include "account.h"
 
 using namespace std;
 
 void createAccount(char*, string);
-void openAccount(char*, string);
+double getBalance(char*);
 bool passwordCheck(char*, string);
+double stringToDouble(string);
+void closeAccount(char*, double, string);
 int main()
 {
-  /*
-     withdraw
-     deposit
-     view balance
-     print receipt
-     change account
-     open account 
-     close session
-     */
   account activeAccount;
   string option, password, password2; 
   char username[100];
+  double transaction;
   bool validOption = true;
   cout << "Welcome to the bank of CSCI111.\n";
   do{
     cout << "[C]reate Account\n";
-    cout << "[O]pen Accoubt\n";
+    cout << "[A]ccess Account\n";
     cout << "[E]xit\n";
     cin >> option;
     if(option == "E" || option == "e")
     {
+      cout << "Goodbye!" << endl; 
       return 0;
     }else if(option == "C" || option == "c")
     {
       cout << "CREATE NEW ACCOUNT\n";
       cout << "Enter new username: ";
       cin >> username;
-//      cin.getline(username, 100); 
       cout << endl << "Enter your password: ";
       cin >> password;
       cout << endl << "Confirm password: ";
@@ -58,7 +53,7 @@ int main()
         createAccount(username, password); 
         validOption = true;
       }
-    }else if(option == "O" || option == "o")
+    }else if(option == "A" || option == "a")
     {
       cout << "Enter Username: ";
       cin >> username;
@@ -66,18 +61,64 @@ int main()
       cin >> password;
       if(passwordCheck(username, password))
       {
-      openAccount(username, password);
-      }
-      validOption = true;
-    }else
+        activeAccount.setUsername(username);
+        double balanceToGet = getBalance(username); 
+        cout << balanceToGet << endl; 
+        activeAccount.setBalance(balanceToGet); 
+      }else{
+        while(passwordCheck(username, password) == false)
+        {
+          cout << "Re-enter password or type -1 to exit\n"; 
+          cin >> password;
+          cout << endl << password << endl;
+          if(password == "-1")
+          {
+            return 0;
+          }
+        }
+       }
+      }else
     {
       cout << "Inalid input, try again\n";
       validOption = false; 
     }
   }
   while(!validOption);
+  cout << endl << "Welcome " << username << endl;
+  while(option != "E" || option != "e")
+  {
+    cout << "What would you like to do?" << endl;
+    cout << "[D]eposit Money" << endl;
+    cout << "[W]ithdraw Money" << endl;
+    cout << "[V]iew Balance" << endl;
+    cout << "[E]xit" << endl; 
+    cin >> option;
+    if(option == "D" || option == "d")
+    {
+      cout << "Amount to deposit: ";
+      cin >> transaction;
+      activeAccount.makeDeposit(transaction); 
+      cout << endl << transaction << " dollars deposited\n";
+    }else if(option == "W" || option == "w")
+    {
+      cout << "Amount to withdraw: ";
+      cin >> transaction;
+      activeAccount.makeWithdrawl(transaction);
+      cout << endl << transaction << " dollars withdrawn\n";
+    }else if(option == "V" || option == "v")
+    {
+      cout << endl << "Account Balance: " << activeAccount.getBalance() << endl;
+
+    }else if(option == "E" || option == "e")
+    {
+      double saveBalance = activeAccount.getBalance();
+      closeAccount(username, saveBalance, password);
+      break; 
+    }
+  }
   return 0;
 }
+
 bool passwordCheck(char* username, string password)
 {
   string passwordToCompare;
@@ -86,26 +127,51 @@ bool passwordCheck(char* username, string password)
   getline(file, passwordToCompare);
   if(password == passwordToCompare)
   {
-    cout << "Welcome " << username << endl;
     return true;
   }else{
-    cout << "Password does not match username\n";
+    return false; 
   }
-  }
+}
 void createAccount(char* username, string password)
 {
-  cout << "Creating account..." << endl; 
   ofstream file;
   file.open(username);
   file << password << endl;
   file << 0;
   file.close(); 
+  cout << "Account Created" << endl; 
+
 }
-void openAccount(char* username, string password)
-{
+/*void openAccount(char* username, string password)
+  {
   string passwordToCompare;
   ifstream read; 
   read.open(username);
   getline(read, passwordToCompare); 
-  
+  } */
+double getBalance(char* username)
+{
+  string garbage; 
+  string balance; 
+  ifstream read;
+  read.open(username);
+  getline(read, garbage);
+  getline(read, balance);
+  double balanceToReturn = stringToDouble(balance);
+  return balanceToReturn;
 }
+double stringToDouble(string toConvert)
+{
+  double doubleToReturn = atof(toConvert.c_str()); 
+  return doubleToReturn;
+}
+void closeAccount(char* username, double balance, string password)
+{
+  ofstream write;
+  remove(username);
+  write.open(username);
+  write << password << endl;
+  write << balance;
+  write.close();
+}
+
