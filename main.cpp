@@ -5,7 +5,7 @@
 #include "account.h"
 
 using namespace std;
-
+bool doesExist(char*);
 void createAccount(char*, string);
 double getBalance(char*);
 bool passwordCheck(char*, string);
@@ -59,25 +59,35 @@ int main()
       cin >> username;
       cout << endl << "Enter password: ";
       cin >> password;
-      if(passwordCheck(username, password))
+      if(doesExist(username))
       {
-        activeAccount.setUsername(username);
-        double balanceToGet = getBalance(username); 
-        cout << balanceToGet << endl; 
-        activeAccount.setBalance(balanceToGet); 
-      }else{
-        while(passwordCheck(username, password) == false)
+
+        if(passwordCheck(username, password))
         {
-          cout << "Re-enter password or type -1 to exit\n"; 
-          cin >> password;
-          cout << endl << password << endl;
-          if(password == "-1")
+          activeAccount.setUsername(username);
+          double balanceToGet = getBalance(username); 
+          cout << balanceToGet << endl; 
+          activeAccount.setBalance(balanceToGet); 
+        }else
+        {
+          while(passwordCheck(username, password) == false)
           {
-            return 0;
+            cout << "Re-enter password or type -1 to exit\n"; 
+            cin >> password;
+            cout << endl << password << endl;
+            if(password == "-1")
+            {
+              return 0;
+            }
           }
+        validOption = true; 
         }
-       }
       }else
+      {
+        cout << "Account Does Not Exist. Exiting.\n";
+        return 0; 
+      }
+    }else
     {
       cout << "Inalid input, try again\n";
       validOption = false; 
@@ -85,9 +95,9 @@ int main()
   }
   while(!validOption);
   cout << endl << "Welcome " << username << endl;
-  while(option != "E" || option != "e")
+  while(true)
   {
-    cout << "What would you like to do?" << endl;
+    cout << endl << "What would you like to do?" << endl;
     cout << "[D]eposit Money" << endl;
     cout << "[W]ithdraw Money" << endl;
     cout << "[V]iew Balance" << endl;
@@ -103,8 +113,13 @@ int main()
     {
       cout << "Amount to withdraw: ";
       cin >> transaction;
-      activeAccount.makeWithdrawl(transaction);
-      cout << endl << transaction << " dollars withdrawn\n";
+      if(activeAccount.isEnough(transaction))
+      {
+        activeAccount.makeWithdrawl(transaction);
+        cout << endl << transaction << " dollars withdrawn\n";
+      }else{
+        cout << "Insufficient funds" << endl;
+      }
     }else if(option == "V" || option == "v")
     {
       cout << endl << "Account Balance: " << activeAccount.getBalance() << endl;
@@ -113,7 +128,7 @@ int main()
     {
       double saveBalance = activeAccount.getBalance();
       closeAccount(username, saveBalance, password);
-      break; 
+      return 0; 
     }
   }
   return 0;
@@ -142,13 +157,6 @@ void createAccount(char* username, string password)
   cout << "Account Created" << endl; 
 
 }
-/*void openAccount(char* username, string password)
-  {
-  string passwordToCompare;
-  ifstream read; 
-  read.open(username);
-  getline(read, passwordToCompare); 
-  } */
 double getBalance(char* username)
 {
   string garbage; 
@@ -174,4 +182,15 @@ void closeAccount(char* username, double balance, string password)
   write << balance;
   write.close();
 }
-
+bool doesExist(char* username)
+{
+  fstream file;
+  file.open(username);
+  if(file.is_open())
+  {
+    return true;
+  }else
+  {
+    return false;
+  }
+}
