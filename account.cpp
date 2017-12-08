@@ -1,32 +1,30 @@
-#include "student.h"
-#include <fstream>
+#include "account.h"
 #include <string>
 account::account()
 {
-  accountName = "Unknown";
   balance = 0.00;
+  username = " ";
 }
-void account::withdraw(double amount)
-{
 
-}
-void account::deposit(double amount)
+void account::setBalance(double money)
 {
-
+  balance = balance + money;
 }
-double account::viewBalance()
+
+void account::setUsername(char userName[100])
 {
-
+  username = userName;
 }
-void account::openAccount(std::string AccountName)
+void account::makeDeposit(double transaction)
 {
-
+  balance = balance + transaction;
 }
-void account::closeAccount()
+void account::makeWithdrawl(double transaction)
 {
-
+  balance = balance - transaction;
 }
-void account::displayAccounts()
-{
+double account::getBalance()
+ {
+   return balance;
+ }
 
-}
